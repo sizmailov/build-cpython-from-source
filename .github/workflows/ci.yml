@@ -1,0 +1,31 @@
+
+name: Upstream
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trunk-cpython:
+    name: 'Trunk CPython'
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: 'python/cpython'
+          ref: 'main'
+      - name: Test default CPython version
+        run: python3 --version
+      - name: Install Dependencies
+        run: sudo ./.github/workflows/posix-deps-apt.sh
+      - name: Configure CPython
+        run: ./configure --with-pydebug
+      - name: Build CPython
+        run: make -j4
+      - name: Display build info
+        run: make pythoninfo
+      - name: Install CPython
+        run: sudo make install
+      - name: Test default CPython version
+        run: python3 --version
